@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Employee Management System</h1>
+
+    <!-- DASHBOARD -->
+    <div class="dashboard">
+        <div class="dashboard-card">
+            <h3>Total Employees</h3>
+            <p id="totalEmployees">0</p>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Total Departments</h3>
+            <p id="totalDepartments">0</p>
+        </div>
+    </div>
+
+    <!-- ADD EMPLOYEE -->
+    <h2>Add Employee</h2>
+
+    <form id="employeeForm">
+        <input type="number" id="id" placeholder="Employee ID" required>
+        <input type="text" id="name" placeholder="Employee Name" required>
+        <input type="text" id="department" placeholder="Department" required>
+        <button type="submit">Add Employee</button>
+    </form>
+
+    <!-- SEARCH EMPLOYEE -->
+    <h2>Search Employee</h2>
+
+    <div class="search-section">
+        <input type="number" id="searchId" placeholder="Enter Employee ID">
+        <button type="button" onclick="searchEmployee()">Search</button>
+        <button type="button" onclick="getEmployees()">Show All</button>
+    </div>
+
+    <!-- DEPARTMENT FILTER -->
+    <h2>Filter by Department</h2>
+
+    <div class="search-section">
+        <select id="departmentFilter">
+            <option value="">All Departments</option>
+        </select>
+
+        <button type="button" onclick="filterByDepartment()">Filter</button>
+        <button type="button" onclick="getEmployees()">Show All</button>
+    </div>
+
+    <!-- EMPLOYEE TABLE -->
+    <h2>Employee List</h2>
+
+    <button type="button" onclick="getEmployees()">View Employees</button>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="employeeTable"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    const apiUrl = "/api/employees";
+
+    // LOAD EMPLOYEES AND UPDATE DASHBOARD
+    async function getEmployees() {
+        try {
+            const response = await fetch(apiUrl);
+
+            if (!response.ok) {
+                throw new Error("Could not load employees");
+            }
+
+            const employees = await response.json();
+
+            // Update dashboard
+            document.getElementById("totalEmployees").textContent =
+                employees.length;
+
+            const departments = new Set(
+                employees.map(employee => employee.department.trim())
+            );
+
+            document.getElementById("totalDepartments").textContent =
+                departments.size;
+
+            // Populate department dropdown
+            const filter = document.getElementById("departmentFilter");
+            const selectedDepartment = filter.value;
+
+            const uniqueDepartments = [
+                ...new Set(employees.map(employee => employee.department))
+            ].sort();
+
+            filter.innerHTML = '<option value="">All Departments</option>';
+
+            uniqueDepartments.forEach(department => {
+                const option = document.createElement("option");
+                option.value = department;
+                option.textContent = department;
+                filter.appendChild(option);
+            });
+
+            filter.value = selectedDepartment;
+
+            // Display all employees
+            displayEmployees(employees);
+
+        } catch (error) {
+            console.error(error);
+            alert("Could not load employees. Check whether the server is running.");
+        }
+    }
+
+    // DISPLAY EMPLOYEES IN TABLE
+    function displayEmployees(employees) {
+        const table = document.getElementById("employeeTable");
+        table.innerHTML = "";
+
+        employees.forEach(employee => {
+            const row = document.createElement("tr");
+
+            [employee.id, employee.name, employee.department].forEach(value => {
+                const cell = document.createElement("td");
+                cell.textContent = value;
+                row.appendChild(cell);
+            });
+
+            const actions = document.createElement("td");
+
+            const editButton = document.createElement("button");
+            editButton.textContent = "Edit";
+            editButton.className = "edit-btn";
+            editButton.type = "button";
+            editButton.onclick = () =>
+                editEmployee(employee.id, employee.name, employee.department);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.className = "delete-btn";
+            deleteButton.type = "button";
+            deleteButton.onclick = () => deleteEmployee(employee.id);
+
+            actions.appendChild(editButton);
+            actions.appendChild(deleteButton);
+            row.appendChild(actions);
+
+            table.appendChild(row);
+        });
+    }
+
+    // ADD EMPLOYEE
+    document.getElementById("employeeForm")
+        .addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const employee = {
+                id: Number(document.getElementById("id").value),
+                name: document.getElementById("name").value.trim(),
+                department: document.getElementById("department").value.trim()
+            };
+
+            if (!employee.name || !employee.department) {
+                alert("Please enter the name and department.");
+                return;
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(employee)
+                });
+
+                if (response.ok) {
+                    alert("Employee added successfully!");
+                    this.reset();
+                    await getEmployees();
+                } else {
+                    alert("Could not add employee. The ID may already exist.");
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Could not connect to the server.");
+            }
+        });
+
+    // EDIT EMPLOYEE
+    async function editEmployee(id, currentName, currentDepartment) {
+        const name = prompt("Enter employee name:", currentName);
+
+        if (name === null) return;
+
+        if (name.trim() === "") {
+            alert("Employee name cannot be empty.");
+            return;
+        }
+
+        const department = prompt("Enter department:", currentDepartment);
+
+        if (department === null) return;
+
+        if (department.trim() === "") {
+            alert("Department cannot be empty.");
+            return;
+        }
+
+        try {
+            const response = await fetch(apiUrl + "/" + id, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: name.trim(),
+                    department: department.trim()
+                })
+            });
+
+            if (response.ok) {
+                alert("Employee updated successfully!");
+                await getEmployees();
+            } else {
+                alert("Could not update employee.");
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert("Could not connect to the server.");
+        }
+    }
+
+    // DELETE EMPLOYEE
+    async function deleteEmployee(id) {
+        if (!confirm("Are you sure you want to delete employee ID " + id + "?")) {
+            return;
+        }
+
+        try {
+            const response = await fetch(apiUrl + "/" + id, {
+                method: "DELETE"
+            });
+
+            if (response.ok || response.status === 204) {
+                alert("Employee deleted successfully!");
+                await getEmployees();
+            } else {
+                alert("Could not delete employee.");
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert("Could not connect to the server.");
+        }
+    }
+
+    // SEARCH EMPLOYEE BY ID
+    async function searchEmployee() {
+        const id = document.getElementById("searchId").value.trim();
+
+        if (id === "") {
+            alert("Please enter an Employee ID!");
+            return;
+        }
+
+        try {
+            const response = await fetch(apiUrl);
+
+            if (!response.ok) {
+                throw new Error("Could not load employees");
+            }
+
+            const employees = await response.json();
+
+            const employee = employees.find(
+                emp => emp.id === Number(id)
+            );
+
+            if (employee) {
+                displayEmployees([employee]);
+            } else {
+                displayEmployees([]);
+                alert("Employee not found!");
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert("Could not search employees.");
+        }
+    }
+
+    // FILTER BY DEPARTMENT
+    async function filterByDepartment() {
+        const department = document.getElementById("departmentFilter").value;
+
+        try {
+            const response = await fetch(apiUrl);
+
+            if (!response.ok) {
+                throw new Error("Could not load employees");
+            }
+
+            const employees = await response.json();
+
+            const filteredEmployees = department
+                ? employees.filter(
+                    employee => employee.department === department
+                )
+                : employees;
+
+            displayEmployees(filteredEmployees);
+
+            if (filteredEmployees.length === 0) {
+                alert("No employees found in this department.");
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert("Could not filter employees.");
+        }
+    }
+
+    // LOAD DATA WHEN PAGE OPENS
+    getEmployees();
+</script>
+
+</body>
+</html>
