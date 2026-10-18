@@ -3,343 +3,1565 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Management System</title>
+    <title>Workforce | Enterprise SaaS Workforce Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
-
 <body>
-<div class="container">
 
-    <h1>Employee Management System</h1>
+    <!-- APP WRAPPER -->
+    <div class="app-layout">
 
-    <!-- DASHBOARD -->
-    <div class="dashboard">
-        <div class="dashboard-card">
-            <h3>Total Employees</h3>
-            <p id="totalEmployees">0</p>
+        <!-- 1. LEFT SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <div class="brand-logo">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-name">Workforce</span>
+                        <span class="brand-tier">Enterprise SaaS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIDEBAR NAVIGATION -->
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">MAIN WORKSPACE</div>
+                
+                <button class="nav-item active" data-view="view-overview" onclick="navigate('view-overview')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="9" rx="1.5"></rect>
+                        <rect x="14" y="3" width="7" height="5" rx="1.5"></rect>
+                        <rect x="14" y="12" width="7" height="9" rx="1.5"></rect>
+                        <rect x="3" y="16" width="7" height="5" rx="1.5"></rect>
+                    </svg>
+                    <span>Overview</span>
+                </button>
+
+                <button class="nav-item" data-view="view-directory" onclick="navigate('view-directory')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>Employees</span>
+                    <span class="nav-counter" id="sidebarEmpCount">0</span>
+                </button>
+
+                <button class="nav-item" data-view="view-analytics" onclick="navigate('view-analytics')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span>Analytics</span>
+                </button>
+
+                <button class="nav-item" data-view="view-audit" onclick="navigate('view-audit')">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>Activity Logs</span>
+                </button>
+
+                <div class="nav-section-label" style="margin-top: 1.5rem;">QUICK ACTIONS</div>
+                <button class="nav-item nav-item-action" onclick="openAddModal()">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Add Employee</span>
+                </button>
+            </nav>
+
+            <!-- SIDEBAR FOOTER / PROFILE -->
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">SA</div>
+                    <div class="user-meta">
+                        <span class="user-name">Sachin A.</span>
+                        <span class="user-role">HR Operations &bull; Admin</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 2. MAIN CONTAINER -->
+        <div class="main-wrapper">
+
+            <!-- TOP HEADER -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle Navigation">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    
+                    <div class="breadcrumb-container">
+                        <span class="breadcrumb-root">Workforce</span>
+                        <span class="breadcrumb-sep">/</span>
+                        <span class="breadcrumb-current" id="headerBreadcrumb">Overview</span>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <!-- Global Search -->
+                    <div class="global-search-box">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="globalSearchInput" placeholder="Quick search employees (ID, Name, Email)..." oninput="handleGlobalSearch(this.value)">
+                        <span class="search-kbd">⌘K</span>
+                    </div>
+
+                    <!-- System Status Badge -->
+                    <div class="system-status-badge">
+                        <span class="pulse-indicator"></span>
+                        <span>Spring Boot Live</span>
+                    </div>
+
+                    <!-- Refresh Button -->
+                    <button class="btn btn-ghost btn-icon-only" onclick="refreshAllData()" title="Sync and refresh all data">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
+                        </svg>
+                    </button>
+
+                    <!-- Primary Action -->
+                    <button class="btn btn-primary" onclick="openAddModal()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>Add Employee</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- MAIN CONTENT AREA -->
+            <main class="content-area">
+
+                <!-- ========================================================
+                     VIEW 1: OVERVIEW DASHBOARD
+                     ======================================================== -->
+                <section id="view-overview" class="view-panel active">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Executive Overview</h1>
+                            <p class="view-subtitle">High-level workforce performance, headcount allocation, and compensation metrics.</p>
+                        </div>
+                        <div class="view-actions">
+                            <span class="timestamp-pill">Live MySQL Data</span>
+                        </div>
+                    </div>
+
+                    <!-- KPI CARDS GRID -->
+                    <div class="kpi-grid">
+                        <!-- Card 1 -->
+                        <div class="kpi-card">
+                            <div class="kpi-icon-wrap icon-indigo">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <div class="kpi-content">
+                                <span class="kpi-label">Total Employees</span>
+                                <div class="kpi-value-row">
+                                    <span class="kpi-value" id="kpiOverviewTotal">0</span>
+                                    <span class="kpi-badge badge-green">Active</span>
+                                </div>
+                                <span class="kpi-subtext">Registered in database</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="kpi-card">
+                            <div class="kpi-icon-wrap icon-violet">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                </svg>
+                            </div>
+                            <div class="kpi-content">
+                                <span class="kpi-label">Active Departments</span>
+                                <div class="kpi-value-row">
+                                    <span class="kpi-value" id="kpiOverviewDepts">0</span>
+                                    <span class="kpi-badge badge-blue">Divisions</span>
+                                </div>
+                                <span class="kpi-subtext">Operational teams</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="kpi-card">
+                            <div class="kpi-icon-wrap icon-emerald">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+                            <div class="kpi-content">
+                                <span class="kpi-label">Average Salary</span>
+                                <div class="kpi-value-row">
+                                    <span class="kpi-value" id="kpiOverviewAvg">$0.00</span>
+                                </div>
+                                <span class="kpi-subtext">Company-wide baseline</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div class="kpi-card">
+                            <div class="kpi-icon-wrap icon-amber">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            </div>
+                            <div class="kpi-content">
+                                <span class="kpi-label">Highest Salary</span>
+                                <div class="kpi-value-row">
+                                    <span class="kpi-value" id="kpiOverviewMax">$0.00</span>
+                                </div>
+                                <span class="kpi-subtext" id="kpiOverviewTopName">N/A</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHARTS ROW -->
+                    <div class="charts-grid">
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <div class="card-header-titles">
+                                    <h3 class="card-title">Department Headcount</h3>
+                                    <p class="card-subtitle">Staff distribution across divisions</p>
+                                </div>
+                                <span class="badge badge-neutral">Distribution</span>
+                            </div>
+                            <div class="card-body chart-body">
+                                <div class="chart-canvas-container">
+                                    <canvas id="deptHeadcountChart"></canvas>
+                                </div>
+                                <div id="deptHeadcountFallback" class="chart-fallback" style="display:none;"></div>
+                            </div>
+                        </div>
+
+                        <div class="card chart-card">
+                            <div class="card-header">
+                                <div class="card-header-titles">
+                                    <h3 class="card-title">Department Average Salaries</h3>
+                                    <p class="card-subtitle">Compensation comparisons by department</p>
+                                </div>
+                                <span class="badge badge-neutral">Payroll</span>
+                            </div>
+                            <div class="card-body chart-body">
+                                <div class="chart-canvas-container">
+                                    <canvas id="deptSalaryChart"></canvas>
+                                </div>
+                                <div id="deptSalaryFallback" class="chart-fallback" style="display:none;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RECENT DATA SECTION -->
+                    <div class="overview-dual-grid">
+                        <!-- Recent Team Members -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-header-titles">
+                                    <h3 class="card-title">Active Team Members</h3>
+                                    <p class="card-subtitle">Latest employees on record</p>
+                                </div>
+                                <button class="btn btn-ghost btn-sm" onclick="navigate('view-directory')">View All &rarr;</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="saas-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Department</th>
+                                            <th>Role</th>
+                                            <th>Salary</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="overviewRecentTableBody">
+                                        <tr><td colspan="4" class="text-center text-muted">Loading team members...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Recent System Activity -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-header-titles">
+                                    <h3 class="card-title">Recent Audit Trail</h3>
+                                    <p class="card-subtitle">Real-time database operations</p>
+                                </div>
+                                <button class="btn btn-ghost btn-sm" onclick="navigate('view-audit')">Full Log &rarr;</button>
+                            </div>
+                            <div class="activity-feed" id="overviewActivityFeed">
+                                <div class="empty-state-mini">Loading activity events...</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ========================================================
+                     VIEW 2: EMPLOYEE DIRECTORY
+                     ======================================================== -->
+                <section id="view-directory" class="view-panel">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Employee Directory</h1>
+                            <p class="view-subtitle">Manage, search, and update staff member profiles.</p>
+                        </div>
+                        <div class="view-actions">
+                            <button class="btn btn-primary" onclick="openAddModal()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                <span>Add Employee</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SEARCH & FILTER TOOLBAR -->
+                    <div class="filter-toolbar">
+                        <!-- Search Box -->
+                        <div class="filter-search">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" id="dirSearchInput" placeholder="Filter by ID, Name, or Email..." oninput="debounceApplyFilters()">
+                        </div>
+
+                        <!-- Department Filter -->
+                        <div class="filter-select-wrap">
+                            <select id="dirDeptFilter" onchange="applyFilters()">
+                                <option value="">All Departments</option>
+                            </select>
+                        </div>
+
+                        <!-- Sort Field -->
+                        <div class="filter-select-wrap">
+                            <select id="dirSortField" onchange="applyFilters()">
+                                <option value="id">Sort by ID</option>
+                                <option value="name">Sort by Name</option>
+                                <option value="department">Sort by Department</option>
+                                <option value="salary">Sort by Salary</option>
+                                <option value="joiningDate">Sort by Joining Date</option>
+                            </select>
+                        </div>
+
+                        <!-- Sort Order -->
+                        <div class="filter-select-wrap">
+                            <select id="dirSortOrder" onchange="applyFilters()">
+                                <option value="asc">Ascending &uarr;</option>
+                                <option value="desc">Descending &darr;</option>
+                            </select>
+                        </div>
+
+                        <!-- Reset Button -->
+                        <button class="btn btn-secondary btn-icon" onclick="resetFilters()" title="Reset all search filters">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                <path d="M3 3v5h5"/>
+                            </svg>
+                            <span>Reset</span>
+                        </button>
+                    </div>
+
+                    <!-- DIRECTORY TABLE CARD -->
+                    <div class="card table-card">
+                        <div class="card-header table-card-header">
+                            <div class="table-stats-header">
+                                <span class="table-stats-title">All Team Members</span>
+                                <span class="badge badge-primary" id="rosterCountBadge">0 Records</span>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="saas-table saas-table-directory">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>ID</th>
+                                        <th>Department</th>
+                                        <th>Role / Title</th>
+                                        <th>Contact Details</th>
+                                        <th>Salary</th>
+                                        <th>Joined</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="directoryTableBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center loading-cell">Loading employee roster...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ========================================================
+                     VIEW 3: ANALYTICS & REPORTS
+                     ======================================================== -->
+                <section id="view-analytics" class="view-panel">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">Workforce Analytics</h1>
+                            <p class="view-subtitle">Detailed compensation distribution, department headcounts, and annual payroll telemetry.</p>
+                        </div>
+                        <div class="view-actions">
+                            <button class="btn btn-secondary" onclick="loadStatistics()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
+                                </svg>
+                                <span>Recalculate Metrics</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TOP PAYROLL METRIC CARDS -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <span class="metric-title">Annual Gross Payroll</span>
+                            <span class="metric-value text-indigo" id="analyticsTotalPayroll">$0.00</span>
+                            <span class="metric-caption">Aggregate annual compensation across all employees</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-title">Highest Compensation</span>
+                            <span class="metric-value text-emerald" id="analyticsMaxSalary">$0.00</span>
+                            <span class="metric-caption" id="analyticsTopEarner">N/A</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-title">Lowest Compensation</span>
+                            <span class="metric-value text-amber" id="analyticsMinSalary">$0.00</span>
+                            <span class="metric-caption" id="analyticsLowEarner">N/A</span>
+                        </div>
+                    </div>
+
+                    <!-- DEPARTMENT BREAKDOWN TABLE -->
+                    <div class="card" style="margin-top: 1.5rem;">
+                        <div class="card-header">
+                            <div class="card-header-titles">
+                                <h3 class="card-title">Department Compensation Matrix</h3>
+                                <p class="card-subtitle">Headcount and wage distribution aggregated by organizational department</p>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="saas-table">
+                                <thead>
+                                    <tr>
+                                        <th>Department</th>
+                                        <th>Headcount</th>
+                                        <th>Share of Workforce</th>
+                                        <th>Avg Salary</th>
+                                        <th>Min Salary</th>
+                                        <th>Max Salary</th>
+                                        <th>Dept Payroll Est.</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="analyticsDeptTableBody">
+                                    <tr><td colspan="7" class="text-center text-muted">Loading department metrics...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ========================================================
+                     VIEW 4: ACTIVITY LOGS & AUDIT TIMELINE
+                     ======================================================== -->
+                <section id="view-audit" class="view-panel">
+                    <div class="view-header">
+                        <div>
+                            <h1 class="view-title">System Audit Log</h1>
+                            <p class="view-subtitle">Tamper-evident record of all create, update, and delete actions committed to MySQL.</p>
+                        </div>
+                        <div class="view-actions">
+                            <button class="btn btn-secondary" onclick="loadActivityLogs()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
+                                </svg>
+                                <span>Refresh Log</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-header-titles">
+                                <h3 class="card-title">Recent Audit Operations</h3>
+                                <p class="card-subtitle">Real-time audit log captured in MySQL database table <code>activity_logs</code></p>
+                            </div>
+                            <span class="badge badge-neutral" id="auditLogCountBadge">0 Records</span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="saas-table">
+                                <thead>
+                                    <tr>
+                                        <th>Log ID</th>
+                                        <th>Timestamp</th>
+                                        <th>Action Type</th>
+                                        <th>Employee ID</th>
+                                        <th>Audit Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="auditTableBody">
+                                    <tr><td colspan="5" class="text-center text-muted">Loading audit entries...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
         </div>
+    </div>
 
-        <div class="dashboard-card">
-            <h3>Total Departments</h3>
-            <p id="totalDepartments">0</p>
+
+    <!-- ========================================================
+         MODAL: ADD & EDIT EMPLOYEE (MODERN SLIDE/MODAL DIALOG)
+         ======================================================== -->
+    <div id="employeeModal" class="modal-backdrop" onclick="handleBackdropClick(event)">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title" id="modalTitle">Register New Employee</h3>
+                    <p class="modal-subtitle" id="modalSubtitle">Complete all required employee credentials below.</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal()" aria-label="Close dialog">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <form id="employeeForm" onsubmit="handleFormSubmit(event)" novalidate>
+                <div class="modal-body">
+                    
+                    <div class="form-grid">
+                        <!-- Employee ID -->
+                        <div class="form-control-wrap">
+                            <label class="form-label" for="empId">
+                                Employee ID <span class="required-star">*</span>
+                            </label>
+                            <input type="number" id="empId" class="form-input" placeholder="e.g. 106" min="1" required>
+                            <span class="field-hint" id="empIdHint">Unique integer identifier</span>
+                            <span class="field-error" id="empIdError"></span>
+                        </div>
+
+                        <!-- Full Name -->
+                        <div class="form-control-wrap">
+                            <label class="form-label" for="empName">
+                                Full Name <span class="required-star">*</span>
+                            </label>
+                            <input type="text" id="empName" class="form-input" placeholder="e.g. Sarah Connor" required>
+                            <span class="field-hint">First and last name</span>
+                            <span class="field-error" id="empNameError"></span>
+                        </div>
+
+                        <!-- Department -->
+                        <div class="form-control-wrap">
+                            <label class="form-label" for="empDept">
+                                Department <span class="required-star">*</span>
+                            </label>
+                            <input type="text" id="empDept" class="form-input" list="departmentList" placeholder="e.g. Engineering, IT, HR..." required>
+                            <datalist id="departmentList"></datalist>
+                            <span class="field-hint">Designated company division</span>
+                            <span class="field-error" id="empDeptError"></span>
+                        </div>
+
+                        <!-- Job Title -->
+                        <div class="form-control-wrap">
+                            <label class="form-label" for="empTitle">Job Title</label>
+                            <input type="text" id="empTitle" class="form-input" placeholder="e.g. Senior Software Engineer">
+                            <span class="field-hint">Position or specialization</span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-control-wrap">
+                            <label class="form-label" for="empEmail">
+                                Email Address <span class="required-star">*</span>
+                            </label>
+                            <input type="email" id="empEmail" class="form-input" placeholder="e.g. sarah@company.com" required>
+                            <span class="field-hint">Corporate contact address</span>
+                            <span class="field-error" id="empEmailError"></span>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="form-control-wrap">
+                            <label class="form-label" for="empPhone">Phone Number</label>
+                            <input type="tel" id="empPhone" class="form-input" placeholder="e.g. 9876543210">
+                            <span class="field-hint">Direct line or mobile number</span>
+                            <span class="field-error" id="empPhoneError"></span>
+                        </div>
+
+                        <!-- Salary -->
+                        <div class="form-control-wrap">
+                            <label class="form-label" for="empSalary">
+                                Base Salary (USD) <span class="required-star">*</span>
+                            </label>
+                            <div class="input-prefix-wrap">
+                                <span class="input-prefix">$</span>
+                                <input type="number" id="empSalary" class="form-input has-prefix" placeholder="65000.00" step="0.01" min="1" required>
+                            </div>
+                            <span class="field-hint">Annual compensation</span>
+                            <span class="field-error" id="empSalaryError"></span>
+                        </div>
+
+                        <!-- Joining Date -->
+                        <div class="form-control-wrap">
+                            <label class="form-label" for="empDate">Joining Date</label>
+                            <input type="date" id="empDate" class="form-input">
+                            <span class="field-hint">Date of hire</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="modalSubmitBtn">
+                        <span id="modalSubmitText">Save Employee</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- ADD EMPLOYEE -->
-    <h2>Add Employee</h2>
 
-    <form id="employeeForm">
-        <input type="number" id="id" placeholder="Employee ID" required>
-        <input type="text" id="name" placeholder="Employee Name" required>
-        <input type="text" id="department" placeholder="Department" required>
-        <button type="submit">Add Employee</button>
-    </form>
-
-    <!-- SEARCH EMPLOYEE -->
-    <h2>Search Employee</h2>
-
-    <div class="search-section">
-        <input type="number" id="searchId" placeholder="Enter Employee ID">
-        <button type="button" onclick="searchEmployee()">Search</button>
-        <button type="button" onclick="getEmployees()">Show All</button>
+    <!-- ========================================================
+         MODAL: VIEW EMPLOYEE DOSSIER CARD
+         ======================================================== -->
+    <div id="viewDossierModal" class="modal-backdrop" onclick="handleBackdropClick(event)">
+        <div class="modal-dialog modal-dialog-sm">
+            <div class="modal-header">
+                <div>
+                    <h3 class="modal-title">Employee Dossier</h3>
+                    <p class="modal-subtitle">Verified system record</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeViewModal()" aria-label="Close dialog">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body" id="dossierBody">
+                <!-- Dynamically injected -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeViewModal()">Close</button>
+                <button type="button" class="btn btn-primary" id="dossierEditBtn">Edit Profile</button>
+            </div>
+        </div>
     </div>
 
-    <!-- DEPARTMENT FILTER -->
-    <h2>Filter by Department</h2>
 
-    <div class="search-section">
-        <select id="departmentFilter">
-            <option value="">All Departments</option>
-        </select>
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="toast-stack"></div>
 
-        <button type="button" onclick="filterByDepartment()">Filter</button>
-        <button type="button" onclick="getEmployees()">Show All</button>
-    </div>
 
-    <!-- EMPLOYEE TABLE -->
-    <h2>Employee List</h2>
+    <!-- ========================================================
+         JAVASCRIPT APPLICATION LOGIC
+         ======================================================== -->
+    <script>
+        const API_URL = "/api/employees";
+        let isEditMode = false;
+        let cachedEmployees = [];
+        let cachedStats = null;
+        let debounceTimer = null;
+        let headcountChartInstance = null;
+        let salaryChartInstance = null;
 
-    <button type="button" onclick="getEmployees()">View Employees</button>
+        // Color palettes for initials avatars
+        const AVATAR_COLORS = [
+            { bg: "#e0e7ff", text: "#4338ca" }, // Indigo
+            { bg: "#ede9fe", text: "#6d28d9" }, // Violet
+            { bg: "#dbeafe", text: "#1e40af" }, // Blue
+            { bg: "#d1fae5", text: "#065f46" }, // Emerald
+            { bg: "#fef3c7", text: "#92400e" }, // Amber
+            { bg: "#ffe4e6", text: "#be123c" }, // Rose
+            { bg: "#ccfbf1", text: "#0f766e" }  // Teal
+        ];
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Department</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="employeeTable"></tbody>
-        </table>
-    </div>
+        function getAvatarColor(name) {
+            if (!name) return AVATAR_COLORS[0];
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const index = Math.abs(hash) % AVATAR_COLORS.length;
+            return AVATAR_COLORS[index];
+        }
 
-</div>
+        function getInitials(name) {
+            if (!name) return "??";
+            const parts = name.trim().split(/\s+/);
+            if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
 
-<script>
-    const apiUrl = "/api/employees";
+        function formatCurrency(num) {
+            return "$" + (Number(num) || 0).toLocaleString("en-US", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
 
-    // LOAD EMPLOYEES AND UPDATE DASHBOARD
-    async function getEmployees() {
-        try {
-            const response = await fetch(apiUrl);
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
-            if (!response.ok) {
-                throw new Error("Could not load employees");
+        // INITIALIZE ON LOAD
+        document.addEventListener("DOMContentLoaded", () => {
+            refreshAllData();
+
+            // Keyboard shortcut ⌘K / Ctrl+K
+            document.addEventListener("keydown", (e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+                    e.preventDefault();
+                    document.getElementById("globalSearchInput").focus();
+                }
+            });
+        });
+
+        async function refreshAllData() {
+            await Promise.all([
+                loadEmployees(),
+                loadStatistics(),
+                loadDepartments(),
+                loadActivityLogs()
+            ]);
+        }
+
+        // VIEW NAVIGATION
+        function navigate(viewId) {
+            document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+            document.querySelectorAll(".nav-item").forEach(btn => btn.classList.remove("active"));
+
+            const targetView = document.getElementById(viewId);
+            if (targetView) targetView.classList.add("active");
+
+            const activeBtn = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+            if (activeBtn) activeBtn.classList.add("active");
+
+            // Update breadcrumb
+            const titles = {
+                "view-overview": "Overview",
+                "view-directory": "Employees",
+                "view-analytics": "Analytics",
+                "view-audit": "Activity Logs"
+            };
+            document.getElementById("headerBreadcrumb").textContent = titles[viewId] || "Dashboard";
+
+            if (viewId === "view-overview") {
+                renderCharts();
+            } else if (viewId === "view-analytics") {
+                renderAnalyticsTable();
+            } else if (viewId === "view-audit") {
+                loadActivityLogs();
             }
 
-            const employees = await response.json();
-
-            // Update dashboard
-            document.getElementById("totalEmployees").textContent =
-                employees.length;
-
-            const departments = new Set(
-                employees.map(employee => employee.department.trim())
-            );
-
-            document.getElementById("totalDepartments").textContent =
-                departments.size;
-
-            // Populate department dropdown
-            const filter = document.getElementById("departmentFilter");
-            const selectedDepartment = filter.value;
-
-            const uniqueDepartments = [
-                ...new Set(employees.map(employee => employee.department))
-            ].sort();
-
-            filter.innerHTML = '<option value="">All Departments</option>';
-
-            uniqueDepartments.forEach(department => {
-                const option = document.createElement("option");
-                option.value = department;
-                option.textContent = department;
-                filter.appendChild(option);
-            });
-
-            filter.value = selectedDepartment;
-
-            // Display all employees
-            displayEmployees(employees);
-
-        } catch (error) {
-            console.error(error);
-            alert("Could not load employees. Check whether the server is running.");
+            // Mobile sidebar auto-close
+            if (window.innerWidth <= 900) {
+                document.getElementById("sidebar").classList.remove("open");
+            }
         }
-    }
 
-    // DISPLAY EMPLOYEES IN TABLE
-    function displayEmployees(employees) {
-        const table = document.getElementById("employeeTable");
-        table.innerHTML = "";
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("open");
+        }
 
-        employees.forEach(employee => {
-            const row = document.createElement("tr");
+        // GLOBAL SEARCH DELEGATION
+        function handleGlobalSearch(val) {
+            navigate("view-directory");
+            document.getElementById("dirSearchInput").value = val;
+            debounceApplyFilters();
+        }
 
-            [employee.id, employee.name, employee.department].forEach(value => {
-                const cell = document.createElement("td");
-                cell.textContent = value;
-                row.appendChild(cell);
-            });
+        function debounceApplyFilters() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                applyFilters();
+            }, 250);
+        }
 
-            const actions = document.createElement("td");
+        // 1. LOAD EMPLOYEES (DIRECTORY)
+        async function loadEmployees() {
+            const search = document.getElementById("dirSearchInput") ? document.getElementById("dirSearchInput").value.trim() : "";
+            const department = document.getElementById("dirDeptFilter") ? document.getElementById("dirDeptFilter").value : "";
+            const sortBy = document.getElementById("dirSortField") ? document.getElementById("dirSortField").value : "id";
+            const order = document.getElementById("dirSortOrder") ? document.getElementById("dirSortOrder").value : "asc";
 
-            const editButton = document.createElement("button");
-            editButton.textContent = "Edit";
-            editButton.className = "edit-btn";
-            editButton.type = "button";
-            editButton.onclick = () =>
-                editEmployee(employee.id, employee.name, employee.department);
+            const params = new URLSearchParams();
+            if (search) params.append("search", search);
+            if (department) params.append("department", department);
+            params.append("sortBy", sortBy);
+            params.append("order", order);
 
-            const deleteButton = document.createElement("button");
-            deleteButton.textContent = "Delete";
-            deleteButton.className = "delete-btn";
-            deleteButton.type = "button";
-            deleteButton.onclick = () => deleteEmployee(employee.id);
+            try {
+                const res = await fetch(`${API_URL}?${params.toString()}`);
+                if (!res.ok) throw new Error("Failed to load employee directory");
+                const employees = await res.json();
+                cachedEmployees = employees;
 
-            actions.appendChild(editButton);
-            actions.appendChild(deleteButton);
-            row.appendChild(actions);
+                renderDirectoryTable(employees);
+                renderOverviewRecentTable(employees);
 
-            table.appendChild(row);
-        });
-    }
+                // Update counter badges
+                const countBadge = document.getElementById("rosterCountBadge");
+                if (countBadge) countBadge.textContent = `${employees.length} Employee${employees.length === 1 ? '' : 's'}`;
+                const sideCount = document.getElementById("sidebarEmpCount");
+                if (sideCount) sideCount.textContent = employees.length;
 
-    // ADD EMPLOYEE
-    document.getElementById("employeeForm")
-        .addEventListener("submit", async function(event) {
-            event.preventDefault();
+            } catch (err) {
+                console.error("Load Employees Error:", err);
+                const tbody = document.getElementById("directoryTableBody");
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Error loading employees: ${escapeHtml(err.message)}</td></tr>`;
+                }
+            }
+        }
 
-            const employee = {
-                id: Number(document.getElementById("id").value),
-                name: document.getElementById("name").value.trim(),
-                department: document.getElementById("department").value.trim()
-            };
+        // RENDER DIRECTORY TABLE
+        function renderDirectoryTable(employees) {
+            const tbody = document.getElementById("directoryTableBody");
+            if (!tbody) return;
 
-            if (!employee.name || !employee.department) {
-                alert("Please enter the name and department.");
+            if (!employees || employees.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty-state-cell">
+                            <div class="empty-state-wrap">
+                                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <h4>No employees found</h4>
+                                <p>No records matched your search criteria. Try modifying your filters or clear them.</p>
+                                <button class="btn btn-secondary btn-sm" onclick="resetFilters()">Clear Filters</button>
+                            </div>
+                        </td>
+                    </tr>`;
                 return;
             }
 
+            tbody.innerHTML = employees.map(emp => {
+                const colors = getAvatarColor(emp.name);
+                const initials = getInitials(emp.name);
+
+                return `
+                <tr>
+                    <td>
+                        <div class="employee-identity">
+                            <div class="avatar-badge" style="background-color: ${colors.bg}; color: ${colors.text};">
+                                ${initials}
+                            </div>
+                            <div class="identity-meta">
+                                <span class="employee-name">${escapeHtml(emp.name)}</span>
+                                <span class="employee-email">${escapeHtml(emp.email || 'No email registered')}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="id-pill">#${emp.id}</span>
+                    </td>
+                    <td>
+                        <span class="dept-badge">${escapeHtml(emp.department || 'Unassigned')}</span>
+                    </td>
+                    <td>
+                        <span class="role-text">${escapeHtml(emp.jobTitle || 'Staff Member')}</span>
+                    </td>
+                    <td>
+                        <div class="contact-details">
+                            <span class="contact-phone">${escapeHtml(emp.phone || 'N/A')}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="salary-value">${formatCurrency(emp.salary)}</span>
+                    </td>
+                    <td>
+                        <span class="date-text">${escapeHtml(emp.joiningDate || 'N/A')}</span>
+                    </td>
+                    <td class="text-right">
+                        <div class="action-buttons-wrap">
+                            <button class="btn-action" title="View Dossier" onclick="viewEmployeeDossier(${emp.id})">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                            <button class="btn-action" title="Edit Employee" onclick="openEditModal(${emp.id})">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </button>
+                            <button class="btn-action btn-action-delete" title="Delete Employee" onclick="deleteEmployee(${emp.id}, '${escapeHtml(emp.name)}')">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join("");
+        }
+
+        // RENDER OVERVIEW RECENT TABLE (TOP 5)
+        function renderOverviewRecentTable(employees) {
+            const tbody = document.getElementById("overviewRecentTableBody");
+            if (!tbody) return;
+
+            const recent = employees.slice(0, 5);
+            if (recent.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No team records found</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = recent.map(emp => {
+                const colors = getAvatarColor(emp.name);
+                const initials = getInitials(emp.name);
+                return `
+                <tr>
+                    <td>
+                        <div class="employee-identity">
+                            <div class="avatar-badge avatar-sm" style="background-color: ${colors.bg}; color: ${colors.text};">
+                                ${initials}
+                            </div>
+                            <div class="identity-meta">
+                                <span class="employee-name">${escapeHtml(emp.name)}</span>
+                                <span class="id-pill">#${emp.id}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="dept-badge">${escapeHtml(emp.department || 'N/A')}</span></td>
+                    <td><span class="role-text">${escapeHtml(emp.jobTitle || 'Staff')}</span></td>
+                    <td><span class="salary-value">${formatCurrency(emp.salary)}</span></td>
+                </tr>`;
+            }).join("");
+        }
+
+        // 2. LOAD STATISTICS & CHARTS
+        async function loadStatistics() {
             try {
-                const response = await fetch(apiUrl, {
-                    method: "POST",
+                const res = await fetch(`${API_URL}/statistics`);
+                if (!res.ok) throw new Error("Failed to load statistics");
+                const stats = await res.json();
+                cachedStats = stats;
+
+                // Overview KPI Cards
+                document.getElementById("kpiOverviewTotal").textContent = stats.totalEmployees || 0;
+                document.getElementById("kpiOverviewDepts").textContent = stats.totalDepartments || 0;
+                document.getElementById("kpiOverviewAvg").textContent = formatCurrency(stats.averageSalary);
+                document.getElementById("kpiOverviewMax").textContent = formatCurrency(stats.highestSalary);
+                document.getElementById("kpiOverviewTopName").textContent = stats.highestPaidEmployee ? `Top Earner: ${stats.highestPaidEmployee}` : "N/A";
+
+                // Analytics View Metrics
+                const totalPayroll = (stats.averageSalary || 0) * (stats.totalEmployees || 0);
+                document.getElementById("analyticsTotalPayroll").textContent = formatCurrency(totalPayroll);
+                document.getElementById("analyticsMaxSalary").textContent = formatCurrency(stats.highestSalary);
+                document.getElementById("analyticsTopEarner").textContent = stats.highestPaidEmployee ? `Lead: ${stats.highestPaidEmployee}` : "N/A";
+                document.getElementById("analyticsMinSalary").textContent = formatCurrency(stats.lowestSalary);
+                document.getElementById("analyticsLowEarner").textContent = stats.lowestPaidEmployee ? `Base: ${stats.lowestPaidEmployee}` : "N/A";
+
+                renderCharts();
+                renderAnalyticsTable();
+
+            } catch (err) {
+                console.error("Stats Error:", err);
+            }
+        }
+
+        // RENDER CHARTS (Chart.js with graceful fallback)
+        function renderCharts() {
+            if (!cachedStats || !cachedStats.departmentSummary) return;
+
+            const depts = cachedStats.departmentSummary.map(d => d.department);
+            const headcounts = cachedStats.departmentSummary.map(d => d.count);
+            const avgSalaries = cachedStats.departmentSummary.map(d => d.avgSalary);
+
+            const hasChartJs = typeof Chart !== "undefined";
+
+            // Chart 1: Department Headcount (Doughnut)
+            const ctx1 = document.getElementById("deptHeadcountChart");
+            const fallback1 = document.getElementById("deptHeadcountFallback");
+
+            if (ctx1 && hasChartJs) {
+                if (headcountChartInstance) headcountChartInstance.destroy();
+                headcountChartInstance = new Chart(ctx1, {
+                    type: "doughnut",
+                    data: {
+                        labels: depts,
+                        datasets: [{
+                            data: headcounts,
+                            backgroundColor: [
+                                "#4f46e5", // Indigo
+                                "#7c3aed", // Violet
+                                "#2563eb", // Blue
+                                "#059669", // Emerald
+                                "#d97706", // Amber
+                                "#dc2626"  // Rose
+                            ],
+                            borderWidth: 2,
+                            borderColor: "#ffffff"
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: "bottom",
+                                labels: { font: { family: "Inter", size: 12 }, padding: 14 }
+                            }
+                        },
+                        cutout: "68%"
+                    }
+                });
+            } else if (fallback1) {
+                fallback1.style.display = "block";
+                fallback1.innerHTML = cachedStats.departmentSummary.map(d => `
+                    <div class="fallback-bar-row">
+                        <span class="fallback-bar-label">${escapeHtml(d.department)}</span>
+                        <div class="fallback-bar-track">
+                            <div class="fallback-bar-fill" style="width: ${(d.count / (cachedStats.totalEmployees || 1)) * 100}%;"></div>
+                        </div>
+                        <span class="fallback-bar-val">${d.count}</span>
+                    </div>
+                `).join("");
+            }
+
+            // Chart 2: Department Average Salary (Bar)
+            const ctx2 = document.getElementById("deptSalaryChart");
+            const fallback2 = document.getElementById("deptSalaryFallback");
+
+            if (ctx2 && hasChartJs) {
+                if (salaryChartInstance) salaryChartInstance.destroy();
+                salaryChartInstance = new Chart(ctx2, {
+                    type: "bar",
+                    data: {
+                        labels: depts,
+                        datasets: [{
+                            label: "Avg Salary ($)",
+                            data: avgSalaries,
+                            backgroundColor: "#6366f1",
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    font: { family: "Inter", size: 11 },
+                                    callback: (val) => "$" + (val >= 1000 ? (val / 1000) + "k" : val)
+                                },
+                                grid: { color: "#f1f5f9" }
+                            },
+                            x: {
+                                ticks: { font: { family: "Inter", size: 12 } },
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            } else if (fallback2) {
+                fallback2.style.display = "block";
+                const maxAvg = Math.max(...avgSalaries, 1);
+                fallback2.innerHTML = cachedStats.departmentSummary.map(d => `
+                    <div class="fallback-bar-row">
+                        <span class="fallback-bar-label">${escapeHtml(d.department)}</span>
+                        <div class="fallback-bar-track">
+                            <div class="fallback-bar-fill fill-emerald" style="width: ${(d.avgSalary / maxAvg) * 100}%;"></div>
+                        </div>
+                        <span class="fallback-bar-val">${formatCurrency(d.avgSalary)}</span>
+                    </div>
+                `).join("");
+            }
+        }
+
+        // RENDER ANALYTICS MATRIX TABLE
+        function renderAnalyticsTable() {
+            const tbody = document.getElementById("analyticsDeptTableBody");
+            if (!tbody || !cachedStats) return;
+
+            const summary = cachedStats.departmentSummary || [];
+            if (summary.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No department data available.</td></tr>`;
+                return;
+            }
+
+            const total = cachedStats.totalEmployees || 1;
+
+            tbody.innerHTML = summary.map(d => {
+                const share = ((d.count / total) * 100).toFixed(1);
+                const deptPayroll = d.count * (d.avgSalary || 0);
+
+                return `
+                <tr>
+                    <td>
+                        <div class="dept-badge-wrap">
+                            <span class="dept-badge">${escapeHtml(d.department)}</span>
+                        </div>
+                    </td>
+                    <td><strong>${d.count}</strong> staff</td>
+                    <td>
+                        <div class="progress-wrap">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${share}%;"></div>
+                            </div>
+                            <span class="progress-text">${share}%</span>
+                        </div>
+                    </td>
+                    <td><span class="salary-value">${formatCurrency(d.avgSalary)}</span></td>
+                    <td><span class="text-muted">${formatCurrency(d.minSalary)}</span></td>
+                    <td><span class="text-emerald font-semibold">${formatCurrency(d.maxSalary)}</span></td>
+                    <td><span class="font-semibold">${formatCurrency(deptPayroll)}</span></td>
+                </tr>`;
+            }).join("");
+        }
+
+        // 3. LOAD DEPARTMENTS (FOR DROPDOWNS & DATALIST)
+        async function loadDepartments() {
+            try {
+                const res = await fetch(`${API_URL}/departments`);
+                if (!res.ok) return;
+                const depts = await res.json();
+
+                // Directory Filter Dropdown
+                const filter = document.getElementById("dirDeptFilter");
+                if (filter) {
+                    const current = filter.value;
+                    filter.innerHTML = `<option value="">All Departments</option>` +
+                        depts.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join("");
+                    filter.value = current;
+                }
+
+                // Datalist in modal
+                const datalist = document.getElementById("departmentList");
+                if (datalist) {
+                    datalist.innerHTML = depts.map(d => `<option value="${escapeHtml(d)}"></option>`).join("");
+                }
+            } catch (err) {
+                console.error("Departments Error:", err);
+            }
+        }
+
+        // 4. LOAD ACTIVITY LOGS
+        async function loadActivityLogs() {
+            try {
+                const res = await fetch(`${API_URL}/activity-logs`);
+                if (!res.ok) throw new Error("Could not retrieve audit history");
+                const logs = await res.json();
+
+                // Full Audit Table
+                const tbody = document.getElementById("auditTableBody");
+                if (tbody) {
+                    if (!logs || logs.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No audit operations logged yet.</td></tr>`;
+                    } else {
+                        tbody.innerHTML = logs.map(l => {
+                            const badgeClass = l.action === "ADD" ? "badge-green" :
+                                               l.action === "DELETE" ? "badge-rose" : "badge-blue";
+                            const formattedTime = l.timestamp ? l.timestamp.replace("T", " ") : "N/A";
+
+                            return `
+                            <tr>
+                                <td><span class="id-pill">#${l.id}</span></td>
+                                <td class="date-text">${formattedTime}</td>
+                                <td><span class="kpi-badge ${badgeClass}">${escapeHtml(l.action)}</span></td>
+                                <td>${l.employeeId ? `<span class="id-pill">#${l.employeeId}</span>` : '<span class="text-muted">N/A</span>'}</td>
+                                <td>${escapeHtml(l.details)}</td>
+                            </tr>`;
+                        }).join("");
+                    }
+                }
+
+                const badge = document.getElementById("auditLogCountBadge");
+                if (badge) badge.textContent = `${logs.length} Logged`;
+
+                // Overview Activity Feed (Top 5)
+                const feed = document.getElementById("overviewActivityFeed");
+                if (feed) {
+                    if (!logs || logs.length === 0) {
+                        feed.innerHTML = `<div class="empty-state-mini">No recent activity detected</div>`;
+                    } else {
+                        feed.innerHTML = logs.slice(0, 5).map(l => {
+                            const badgeClass = l.action === "ADD" ? "badge-green" :
+                                               l.action === "DELETE" ? "badge-rose" : "badge-blue";
+                            const formattedTime = l.timestamp ? l.timestamp.replace("T", " ").substring(0, 16) : "";
+
+                            return `
+                            <div class="activity-feed-item">
+                                <span class="kpi-badge ${badgeClass}">${escapeHtml(l.action)}</span>
+                                <div class="activity-feed-meta">
+                                    <span class="activity-feed-desc">${escapeHtml(l.details)}</span>
+                                    <span class="activity-feed-time">${formattedTime}</span>
+                                </div>
+                            </div>`;
+                        }).join("");
+                    }
+                }
+
+            } catch (err) {
+                console.error("Activity Logs Error:", err);
+            }
+        }
+
+        // FILTER CONTROLS
+        function applyFilters() {
+            loadEmployees();
+        }
+
+        function resetFilters() {
+            if (document.getElementById("dirSearchInput")) document.getElementById("dirSearchInput").value = "";
+            if (document.getElementById("globalSearchInput")) document.getElementById("globalSearchInput").value = "";
+            if (document.getElementById("dirDeptFilter")) document.getElementById("dirDeptFilter").value = "";
+            if (document.getElementById("dirSortField")) document.getElementById("dirSortField").value = "id";
+            if (document.getElementById("dirSortOrder")) document.getElementById("dirSortOrder").value = "asc";
+            loadEmployees();
+        }
+
+        // MODAL MANAGEMENT
+        function openAddModal() {
+            isEditMode = false;
+            document.getElementById("modalTitle").textContent = "Register New Employee";
+            document.getElementById("modalSubtitle").textContent = "Fill in the required credentials to add a team member.";
+            document.getElementById("modalSubmitText").textContent = "Save Employee";
+
+            const empIdInput = document.getElementById("empId");
+            empIdInput.readOnly = false;
+            empIdInput.disabled = false;
+            document.getElementById("empIdHint").textContent = "Unique positive integer identifier";
+
+            document.getElementById("employeeForm").reset();
+            clearValidationErrors();
+
+            document.getElementById("employeeModal").classList.add("open");
+            document.body.style.overflow = "hidden";
+            setTimeout(() => empIdInput.focus(), 100);
+        }
+
+        function openEditModal(id) {
+            const emp = cachedEmployees.find(e => e.id === id);
+            if (!emp) return;
+
+            isEditMode = true;
+            document.getElementById("modalTitle").textContent = `Edit Profile: ${emp.name}`;
+            document.getElementById("modalSubtitle").textContent = `Updating records for Employee ID #${emp.id}`;
+            document.getElementById("modalSubmitText").textContent = "Update Details";
+
+            const empIdInput = document.getElementById("empId");
+            empIdInput.value = emp.id;
+            empIdInput.readOnly = true;
+            empIdInput.disabled = true;
+            document.getElementById("empIdHint").textContent = "ID cannot be modified";
+
+            document.getElementById("empName").value = emp.name || "";
+            document.getElementById("empDept").value = emp.department || "";
+            document.getElementById("empTitle").value = emp.jobTitle || "";
+            document.getElementById("empEmail").value = emp.email || "";
+            document.getElementById("empPhone").value = emp.phone || "";
+            document.getElementById("empSalary").value = emp.salary || "";
+            document.getElementById("empDate").value = emp.joiningDate || "";
+
+            clearValidationErrors();
+
+            document.getElementById("employeeModal").classList.add("open");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeModal() {
+            document.getElementById("employeeModal").classList.remove("open");
+            document.body.style.overflow = "";
+            clearValidationErrors();
+        }
+
+        function handleBackdropClick(e) {
+            if (e.target.classList.contains("modal-backdrop")) {
+                closeModal();
+                closeViewModal();
+            }
+        }
+
+        // VIEW EMPLOYEE DOSSIER MODAL
+        function viewEmployeeDossier(id) {
+            const emp = cachedEmployees.find(e => e.id === id);
+            if (!emp) return;
+
+            const colors = getAvatarColor(emp.name);
+            const initials = getInitials(emp.name);
+
+            document.getElementById("dossierBody").innerHTML = `
+                <div class="dossier-card">
+                    <div class="dossier-header">
+                        <div class="avatar-badge avatar-lg" style="background-color: ${colors.bg}; color: ${colors.text};">
+                            ${initials}
+                        </div>
+                        <div class="dossier-titles">
+                            <h3>${escapeHtml(emp.name)}</h3>
+                            <span class="role-text">${escapeHtml(emp.jobTitle || 'Team Member')}</span>
+                            <div class="dossier-pills">
+                                <span class="id-pill">ID: #${emp.id}</span>
+                                <span class="dept-badge">${escapeHtml(emp.department || 'Unassigned')}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dossier-details-grid">
+                        <div class="dossier-item">
+                            <span class="dossier-label">Email Address</span>
+                            <span class="dossier-val">${escapeHtml(emp.email || 'Not specified')}</span>
+                        </div>
+                        <div class="dossier-item">
+                            <span class="dossier-label">Phone</span>
+                            <span class="dossier-val">${escapeHtml(emp.phone || 'Not specified')}</span>
+                        </div>
+                        <div class="dossier-item">
+                            <span class="dossier-label">Base Salary</span>
+                            <span class="dossier-val salary-highlight">${formatCurrency(emp.salary)}</span>
+                        </div>
+                        <div class="dossier-item">
+                            <span class="dossier-label">Joining Date</span>
+                            <span class="dossier-val">${escapeHtml(emp.joiningDate || 'Not specified')}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("dossierEditBtn").onclick = () => {
+                closeViewModal();
+                openEditModal(emp.id);
+            };
+
+            document.getElementById("viewDossierModal").classList.add("open");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeViewModal() {
+            document.getElementById("viewDossierModal").classList.remove("open");
+            document.body.style.overflow = "";
+        }
+
+        // FORM VALIDATION & SUBMISSION
+        function clearValidationErrors() {
+            document.querySelectorAll(".form-input").forEach(el => el.classList.remove("input-error"));
+            document.querySelectorAll(".field-error").forEach(el => el.textContent = "");
+        }
+
+        function setFieldError(id, msg) {
+            const el = document.getElementById(id);
+            if (el) el.classList.add("input-error");
+            const errSpan = document.getElementById(id + "Error");
+            if (errSpan) errSpan.textContent = msg;
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            clearValidationErrors();
+
+            const idVal = document.getElementById("empId").value.trim();
+            const nameVal = document.getElementById("empName").value.trim();
+            const deptVal = document.getElementById("empDept").value.trim();
+            const titleVal = document.getElementById("empTitle").value.trim();
+            const emailVal = document.getElementById("empEmail").value.trim();
+            const phoneVal = document.getElementById("empPhone").value.trim();
+            const salaryVal = document.getElementById("empSalary").value.trim();
+            const dateVal = document.getElementById("empDate").value.trim();
+
+            let isValid = true;
+
+            // Validate ID
+            const id = Number(idVal);
+            if (!isEditMode) {
+                if (!idVal || isNaN(id) || id <= 0) {
+                    setFieldError("empId", "Enter a valid positive integer ID.");
+                    isValid = false;
+                }
+            }
+
+            // Validate Name
+            if (!nameVal) {
+                setFieldError("empName", "Full name is required.");
+                isValid = false;
+            }
+
+            // Validate Department
+            if (!deptVal) {
+                setFieldError("empDept", "Department is required.");
+                isValid = false;
+            }
+
+            // Validate Email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailVal) {
+                setFieldError("empEmail", "Email address is required.");
+                isValid = false;
+            } else if (!emailRegex.test(emailVal)) {
+                setFieldError("empEmail", "Please enter a valid email address format.");
+                isValid = false;
+            }
+
+            // Validate Phone (optional format check)
+            if (phoneVal && !/^[0-9+\-\s()]{7,20}$/.test(phoneVal)) {
+                setFieldError("empPhone", "Enter a valid phone number (digits and standard symbols).");
+                isValid = false;
+            }
+
+            // Validate Salary
+            const salary = parseFloat(salaryVal);
+            if (!salaryVal || isNaN(salary) || salary <= 0) {
+                setFieldError("empSalary", "Enter a valid salary greater than 0.");
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            const employee = {
+                id: id,
+                name: nameVal,
+                department: deptVal,
+                jobTitle: titleVal,
+                email: emailVal,
+                phone: phoneVal,
+                salary: salary,
+                joiningDate: dateVal
+            };
+
+            const submitBtn = document.getElementById("modalSubmitBtn");
+            const submitText = document.getElementById("modalSubmitText");
+            submitBtn.disabled = true;
+            submitText.textContent = "Saving...";
+
+            const url = isEditMode ? `${API_URL}/${id}` : API_URL;
+            const method = isEditMode ? "PUT" : "POST";
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(employee)
                 });
 
-                if (response.ok) {
-                    alert("Employee added successfully!");
-                    this.reset();
-                    await getEmployees();
-                } else {
-                    alert("Could not add employee. The ID may already exist.");
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({}));
+                    const errMsg = errorData.error || `HTTP ${res.status}: Failed to save employee.`;
+                    
+                    if (errMsg.toLowerCase().includes("id")) {
+                        setFieldError("empId", errMsg);
+                    } else if (errMsg.toLowerCase().includes("email")) {
+                        setFieldError("empEmail", errMsg);
+                    } else {
+                        showToast(errMsg, "error");
+                    }
+                    return;
                 }
 
-            } catch (error) {
-                console.error(error);
-                alert("Could not connect to the server.");
+                closeModal();
+                showToast(isEditMode ? "Employee details updated successfully!" : "Employee registered successfully!", "success");
+                await refreshAllData();
+
+            } catch (err) {
+                console.error("Save Error:", err);
+                showToast(err.message || "Network error while saving.", "error");
+            } finally {
+                submitBtn.disabled = false;
+                submitText.textContent = isEditMode ? "Update Details" : "Save Employee";
             }
-        });
-
-    // EDIT EMPLOYEE
-    async function editEmployee(id, currentName, currentDepartment) {
-        const name = prompt("Enter employee name:", currentName);
-
-        if (name === null) return;
-
-        if (name.trim() === "") {
-            alert("Employee name cannot be empty.");
-            return;
         }
 
-        const department = prompt("Enter department:", currentDepartment);
+        // DELETE EMPLOYEE
+        async function deleteEmployee(id, name) {
+            const confirmed = window.confirm(`Permanently remove employee #${id} (${name}) from the database? This action will be audited.`);
+            if (!confirmed) return;
 
-        if (department === null) return;
+            try {
+                const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+                if (!res.ok && res.status !== 204) {
+                    const errorData = await res.json().catch(() => ({}));
+                    throw new Error(errorData.error || "Could not delete employee record.");
+                }
 
-        if (department.trim() === "") {
-            alert("Department cannot be empty.");
-            return;
+                showToast(`Employee #${id} removed successfully.`, "success");
+                await refreshAllData();
+
+            } catch (err) {
+                console.error("Delete Error:", err);
+                showToast(err.message, "error");
+            }
         }
 
-        try {
-            const response = await fetch(apiUrl + "/" + id, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    name: name.trim(),
-                    department: department.trim()
-                })
-            });
+        // TOAST NOTIFICATIONS
+        function showToast(message, type = "info") {
+            const container = document.getElementById("toastContainer");
+            if (!container) return;
 
-            if (response.ok) {
-                alert("Employee updated successfully!");
-                await getEmployees();
+            const toast = document.createElement("div");
+            toast.className = `toast toast-${type}`;
+
+            let iconSvg = "";
+            if (type === "success") {
+                iconSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+            } else if (type === "error") {
+                iconSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
             } else {
-                alert("Could not update employee.");
+                iconSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
             }
 
-        } catch (error) {
-            console.error(error);
-            alert("Could not connect to the server.");
+            toast.innerHTML = `
+                <div class="toast-icon">${iconSvg}</div>
+                <div class="toast-message">${escapeHtml(message)}</div>
+                <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add("toast-fadeout");
+                setTimeout(() => toast.remove(), 300);
+            }, 4500);
         }
-    }
-
-    // DELETE EMPLOYEE
-    async function deleteEmployee(id) {
-        if (!confirm("Are you sure you want to delete employee ID " + id + "?")) {
-            return;
-        }
-
-        try {
-            const response = await fetch(apiUrl + "/" + id, {
-                method: "DELETE"
-            });
-
-            if (response.ok || response.status === 204) {
-                alert("Employee deleted successfully!");
-                await getEmployees();
-            } else {
-                alert("Could not delete employee.");
-            }
-
-        } catch (error) {
-            console.error(error);
-            alert("Could not connect to the server.");
-        }
-    }
-
-    // SEARCH EMPLOYEE BY ID
-    async function searchEmployee() {
-        const id = document.getElementById("searchId").value.trim();
-
-        if (id === "") {
-            alert("Please enter an Employee ID!");
-            return;
-        }
-
-        try {
-            const response = await fetch(apiUrl);
-
-            if (!response.ok) {
-                throw new Error("Could not load employees");
-            }
-
-            const employees = await response.json();
-
-            const employee = employees.find(
-                emp => emp.id === Number(id)
-            );
-
-            if (employee) {
-                displayEmployees([employee]);
-            } else {
-                displayEmployees([]);
-                alert("Employee not found!");
-            }
-
-        } catch (error) {
-            console.error(error);
-            alert("Could not search employees.");
-        }
-    }
-
-    // FILTER BY DEPARTMENT
-    async function filterByDepartment() {
-        const department = document.getElementById("departmentFilter").value;
-
-        try {
-            const response = await fetch(apiUrl);
-
-            if (!response.ok) {
-                throw new Error("Could not load employees");
-            }
-
-            const employees = await response.json();
-
-            const filteredEmployees = department
-                ? employees.filter(
-                    employee => employee.department === department
-                )
-                : employees;
-
-            displayEmployees(filteredEmployees);
-
-            if (filteredEmployees.length === 0) {
-                alert("No employees found in this department.");
-            }
-
-        } catch (error) {
-            console.error(error);
-            alert("Could not filter employees.");
-        }
-    }
-
-    // LOAD DATA WHEN PAGE OPENS
-    getEmployees();
-</script>
-
+    </script>
 </body>
 </html>

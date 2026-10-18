@@ -1,0 +1,14 @@
+spring.application.name=employee-management
+
+# Database Configuration Template
+# Set the DB_PASSWORD environment variable locally before running.
+spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/employee_db}
+spring.datasource.username=${DB_USER:root}
+spring.datasource.password=${DB_PASSWORD}
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA & Hibernate Configuration
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
